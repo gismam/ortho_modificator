@@ -10,7 +10,7 @@
 
 -   Free software: MIT License
 -   Documentation: https://gismam.github.io/ortho_modificator
-    
+
 
 ## Features
 
