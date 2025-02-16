@@ -10,8 +10,9 @@
 
 -   Free software: MIT License
 -   Documentation: https://gismam.github.io/ortho_modificator
-    
+
 
 ## Features
 
--   TODO
+-   Creat interactive maps with minimal lines of code
+-   Greatea tool for GIS
