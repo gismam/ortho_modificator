@@ -81,6 +81,7 @@ nav:
     - Report Issues: https://github.com/gismam/ortho_modificator/issues
     - Examples:
         - examples/intro.ipynb
+        - examples/map.ipynb
     - API Reference:
           - ortho_modificator module: ortho_modificator.md
           - common module: common.md
