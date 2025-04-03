@@ -1,3 +1,5 @@
+"""This module provides a custom Map class that extends folium.Map"""
+
 import folium
 
 
@@ -31,7 +33,11 @@ class Map(folium.Map):
         #     self.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
 
     def add_shp(self, data, **kwargs):
+        """_summary_
 
+        Args:
+            data (_type_): _description_
+        """
         import geopandas as gpd
 
         gdf = gpd.read_file(data)
