@@ -85,3 +85,4 @@ nav:
     - API Reference:
           - ortho_modificator module: ortho_modificator.md
           - common module: common.md
+          - foliumap module: folium.md
