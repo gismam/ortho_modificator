@@ -77,10 +77,11 @@ class Map(ipyleaflet.Map):
             self.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
 
     def add_shp(self, data, **kwargs):
-        """_summary_
+        """Adds a shapefile to the map
 
         Args:
-            data (_type_): _description_
+            data (_type_): The file path to the shapefile.
+            **kwargs: Additional keyword arguments for the GeoJSON layer.
         """
 
         import geopandas as gpd
@@ -91,10 +92,11 @@ class Map(ipyleaflet.Map):
         self.add_geojson(geojson, **kwargs)
 
     def add_gdf(self, gdf, **kwargs):
-        """_summary_
+        """Adds a GeoDataFrame to the map.
 
         Args:
-            gdf (_type_): _description_
+            gdf (_type_): The GeoDataFrame to add.
+            **kwargs: Additional keyword arguments for the GeoJSON layer.
         """
 
         gdf = gdf.to_crs(epsg=4326)
@@ -102,13 +104,13 @@ class Map(ipyleaflet.Map):
         self.add_geojson(geojson, **kwargs)
 
     def add_vector(self, data, **kwargs):
-        """_summary_
+        """Adds vector data to the map.
 
         Args:
-            data (_type_): _description_
-
+            data (str, geopandas.GeoDataFrame, or dict): The vector data. Can be a file path, GeoDataframe or Dictionary.
+            **kwargs: Additional keyword arguments for the GeoJSON layer.
         Raises:
-            ValueError: _description_
+            ValueError: If the data type is invalid.
         """
 
         import geopandas as gpd
