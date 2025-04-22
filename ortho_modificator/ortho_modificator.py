@@ -2,6 +2,7 @@
 
 import os
 import ipyleaflet
+import ipywidgets as widgets
 
 
 class Map(ipyleaflet.Map):
@@ -28,6 +29,93 @@ class Map(ipyleaflet.Map):
         url = eval(f"ipyleaflet.basemaps.{basemap}").build_url()
         layer = ipyleaflet.TileLayer(url=url, name=basemap)
         self.add(layer)
+
+    def add_basemap_gui(self, options=None, position="topright"):
+        """Adds a graphical user interface (GUI) for selecting basemaps.
+
+        Args:
+            options (list, optional): A list of basemap options to display in the dropdown.
+                Defaults to ["OpenStreetMap.Mapnik", "OpenTopoMap", "Esri.WorldImagery", "CartoDB.DarkMatter"].
+            position (str, optional): The position of the widget on the map. Defaults to "topright".
+
+        Behavior:
+            - A toggle button is used to show or hide the dropdown and close button.
+            - The dropdown allows users to select a basemap from the provided options.
+            - The close button removes the widget from the map.
+
+        Event Handlers:
+            - `on_toggle_change`: Toggles the visibility of the dropdown and close button.
+            - `on_button_click`: Closes and removes the widget from the map.
+            - `on_dropdown_change`: Updates the map's basemap when a new option is selected.
+        """
+
+        if options is None:
+            options = [
+                "OpenStreetMap",
+                "OpenTopoMap",
+                "Esri.WorldImagery",
+                "CartoDB.DarkMatter",
+            ]
+
+        toggle = widgets.ToggleButton(
+            value=True,
+            button_style="",  # 'success', 'info', 'warning', 'danger' or ''
+            tooltip="Click me",
+            icon="map",
+        )
+        toggle.layout = widgets.Layout(width="38px", height="38px")
+
+        dropdown = widgets.Dropdown(
+            options=options,
+            value=options[0],
+            description="Basemap:",
+            style={"description_width": "initial"},
+        )
+        dropdown.layout = widgets.Layout(width="250px", height="38px")
+
+        button = widgets.Button(
+            icon="times",
+        )
+        button.layout = widgets.Layout(width="38px", height="38px")
+
+        hbox = widgets.HBox([toggle, dropdown, button])
+
+        def on_toggle_change(change):
+            if change["new"]:
+                hbox.children = [toggle, dropdown, button]
+            else:
+                hbox.children = [toggle]
+
+        toggle.observe(on_toggle_change, names="value")
+
+        def on_button_click(b):
+            hbox.close()
+            toggle.close()
+            dropdown.close()
+            button.close()
+
+        button.on_click(on_button_click)
+
+        def on_dropdown_change(change):
+            if change["new"]:
+                self.layers = self.layers[:-2]
+                self.add_basemap(change["new"])
+
+        dropdown.observe(on_dropdown_change, names="value")
+
+        control = ipyleaflet.WidgetControl(widget=hbox, position=position)
+        self.add(control)
+
+    def add_widget(self, widget, position="topright", **kwargs):
+        """Add a widget to the map.
+
+        Args:
+            widget (ipywidgets.Widget): The widget to add.
+            position (str, optional): Position of the widget. Defaults to "topright".
+            **kwargs: Additional keyword arguments for the WidgetControl.
+        """
+        control = ipyleaflet.WidgetControl(widget=widget, position=position, **kwargs)
+        self.add(control)
 
     def add_google_map(self, map_type="ROADMAP"):
         """Add Google Map to the map.
@@ -128,3 +216,56 @@ class Map(ipyleaflet.Map):
 
         control = ipyleaflet.LayersControl(position="topright")
         self.add_control(control)
+
+    def add_raster(self, filepath, **kwargs):
+
+        from localtileserver import TileClient, get_leaflet_tile_layer
+
+        client = TileClient(filepath)
+        tile_layer = get_leaflet_tile_layer(client, **kwargs)
+
+        self.add(tile_layer)
+        self.center = client.center()
+        self.zoom = client.default_zoom
+
+    def add_image(self, image, bounds=None, **kwargs):
+        """Adds an image to the map.
+
+        Args:
+            image (str): File path to the image.
+            bounds (list, optional): Bounds for the image. Defaults to None.
+            **kwargs: Additional keyword arguments for the ipyleaflet.ImageOverlay layer
+        """
+
+        if bounds is None:
+            bounds = [[-90, -180], [90, 180]]
+        overlay = ipyleaflet.ImageOverlay(url=image, bounds=bounds, **kwargs)
+        self.add(overlay)
+
+    def add_video(self, video, bounds=None, **kwargs):
+        """Adds a video to the map.
+
+        Args:
+            video (str): File path to the video.
+            bounds (list, optional): Bounds for the image. Defaults to None.
+            **kwargs: Additional keyword arguments for the ipyleaflet.ImageOverlay layer
+        """
+
+        if bounds is None:
+            bounds = [[-90, -180], [90, 180]]
+        overlay = ipyleaflet.VideoOverlay(url=video, bounds=bounds, **kwargs)
+        self.add(overlay)
+
+    def add_wmts(self, url, layers, format="image/png", transparent=True, **kwargs):
+        """Adds a WMS Layer to the map.
+
+        Args:
+            url (str): WMS Service URL.
+            layers (str): The layers to display.
+            **kwargs: Additional keyword arguments for the ipyleaflet.ImageOverlay layer
+        """
+
+        layer = ipyleaflet.WMSLayer(
+            url=url, layers=layers, format=format, transparent=transparent, **kwargs
+        )
+        self.add(layer)
