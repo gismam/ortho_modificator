@@ -2,7 +2,6 @@
 
 """Tests for `ortho_modificator` package."""
 
-
 import unittest
 
 from ortho_modificator import ortho_modificator
